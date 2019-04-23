@@ -1,0 +1,48 @@
+version: '1'
+
+services:
+    db:
+        image: mysql:latest
+        environment:
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+        volumes:
+            - ./volumes/db:/docker-entrypoint-initdb.d
+            - ./volumes/db/data:/var/lib/mysql
+        ports:
+            - "3306:3306"
+        restart: always
+
+    flask:
+        build: .
+        environment:
+            SQLALCHEMY_DATABASE_URI: "mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db/${MYSQL_DATABASE}"
+        ports:
+            - "5000:5000"
+        depends_on:
+            - db
+        restart: always
+
+    nginx:
+        image: nginx:alpine
+        restart: unless-stopped
+        volumes:
+            - ./volumes/nginx:/etc/nginx/conf.d
+            - ./volumes/certbot/conf:/etc/letsencrypt
+            - ./volumes/certbot/www:/var/www/certbot
+            - ./site-secomp:/site-secomp
+        ports:
+            - "80:80"
+            - "443:443"
+        command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+    certbot:
+        image: certbot/certbot
+        restart: unless-stopped
+        volumes:
+            - ./volumes/certbot/conf:/etc/letsencrypt
+            - ./volumes/certbot/www:/var/www/certbot
+        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
+

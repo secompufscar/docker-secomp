@@ -1,0 +1,7 @@
+# Don't send the following files to the docker daemon as the build conext.
+
+.git
+.gitattributes
+.gitmodules
+README.md
+docker-compose.yml
