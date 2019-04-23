@@ -1,0 +1,3 @@
+[submodule "site-secomp"]
+	path = site-secomp
+	url = https://github.com/secompufscar/site-secomp
