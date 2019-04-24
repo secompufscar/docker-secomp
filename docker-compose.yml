@@ -1,4 +1,4 @@
-version: '1'
+version: '3.7'
 
 services:
     db:
@@ -6,8 +6,6 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
             MYSQL_DATABASE: ${MYSQL_DATABASE}
-            MYSQL_USER: ${MYSQL_USER}
-            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
         volumes:
             - ./volumes/db:/docker-entrypoint-initdb.d
             - ./volumes/db/data:/var/lib/mysql
@@ -17,10 +15,11 @@ services:
 
     flask:
         build: .
+        container_name: flask
         environment:
-            SQLALCHEMY_DATABASE_URI: "mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@db/${MYSQL_DATABASE}"
+            FLASK_CONFIGURATION: ${FLASK_CONFIGURATION}
         ports:
-            - "5000:5000"
+            - "8000:8000"
         depends_on:
             - db
         restart: always
