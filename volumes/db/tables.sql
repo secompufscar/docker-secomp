@@ -1,40 +1,6 @@
-
-DROP DATABASE IF EXISTS `db`;
+DROP DATABASE IF EXISTS `secomp`;
 CREATE DATABASE `secomp`;
 USE `secomp`;
-CREATE TABLE `atividade` (
-  `id` int(11) NOT NULL,
-  `id_ministrante` int(11) DEFAULT NULL,
-  `id_evento` int(11) DEFAULT NULL,
-  `vagas_totais` int(11) NOT NULL,
-  `vagas_disponiveis` int(11) NOT NULL,
-  `pre_requisitos` varchar(512) NOT NULL,
-  `pre_requisitos_recomendados` varchar(512) NOT NULL,
-  `ativo` tinyint(1) NOT NULL,
-  `tipo` int(11) NOT NULL,
-  `data_hora` datetime NOT NULL,
-  `local` varchar(64) NOT NULL,
-  `titulo` varchar(64) NOT NULL,
-  `descricao` varchar(1024) NOT NULL,
-  `recursos_necessarios` varchar(512) NOT NULL,
-  `observacoes` varchar(512) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `id_ministrante` (`id_ministrante`),
-  KEY `id_evento` (`id_evento`),
-  CONSTRAINT `atividade_ibfk_1` FOREIGN KEY (`id_ministrante`) REFERENCES `ministrante` (`id`),
-  CONSTRAINT `atividade_ibfk_2` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`)
-);
-CREATE TABLE `camiseta` (
-  `id` int(11) NOT NULL,
-  `id_evento` int(11) NOT NULL,
-  `tamanho` varchar(30) NOT NULL,
-  `quantidade` int(11) NOT NULL,
-  `ordem_site` int(11) NOT NULL,
-  `quantidade_restante` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `id_evento` (`id_evento`),
-  CONSTRAINT `camiseta_ibfk_1` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`)
-);
 CREATE TABLE `cargo` (
   `id` int(11) NOT NULL,
   `nome` varchar(100) NOT NULL,
@@ -76,23 +42,10 @@ CREATE TABLE `instituicao` (
   `nome` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
 );
-CREATE TABLE `membro_de_equipe` (
+CREATE TABLE `permissao` (
   `id` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
-  `foto` varchar(100) DEFAULT NULL,
-  `email_secomp` varchar(254) DEFAULT NULL,
-  `id_cargo` int(11) NOT NULL,
-  `id_diretoria` int(11) NOT NULL,
-  `id_evento` int(11) NOT NULL,
-  PRIMARY KEY (`id`),
-  KEY `id_usuario` (`id_usuario`),
-  KEY `id_cargo` (`id_cargo`),
-  KEY `id_diretoria` (`id_diretoria`),
-  KEY `id_evento` (`id_evento`),
-  CONSTRAINT `membro_de_equipe_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`),
-  CONSTRAINT `membro_de_equipe_ibfk_2` FOREIGN KEY (`id_cargo`) REFERENCES `cargo` (`id`),
-  CONSTRAINT `membro_de_equipe_ibfk_3` FOREIGN KEY (`id_diretoria`) REFERENCES `diretoria` (`id`),
-  CONSTRAINT `membro_de_equipe_ibfk_4` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`)
+  `nome` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
 );
 CREATE TABLE `ministrante` (
   `id` int(11) NOT NULL,
@@ -115,6 +68,80 @@ CREATE TABLE `ministrante` (
   `github` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
+CREATE TABLE `camiseta` (
+  `id` int(11) NOT NULL,
+  `id_evento` int(11) NOT NULL,
+  `tamanho` varchar(30) NOT NULL,
+  `quantidade` int(11) NOT NULL,
+  `ordem_site` int(11) NOT NULL,
+  `quantidade_restante` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_evento` (`id_evento`),
+  CONSTRAINT `camiseta_ibfk_1` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`)
+);
+CREATE TABLE `atividade` (
+  `id` int(11) NOT NULL,
+  `id_ministrante` int(11) DEFAULT NULL,
+  `id_evento` int(11) DEFAULT NULL,
+  `vagas_totais` int(11) NOT NULL,
+  `vagas_disponiveis` int(11) NOT NULL,
+  `pre_requisitos` varchar(512) NOT NULL,
+  `pre_requisitos_recomendados` varchar(512) NOT NULL,
+  `ativo` tinyint(1) NOT NULL,
+  `tipo` int(11) NOT NULL,
+  `data_hora` datetime NOT NULL,
+  `local` varchar(64) NOT NULL,
+  `titulo` varchar(64) NOT NULL,
+  `descricao` varchar(1024) NOT NULL,
+  `recursos_necessarios` varchar(512) NOT NULL,
+  `observacoes` varchar(512) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_ministrante` (`id_ministrante`),
+  KEY `id_evento` (`id_evento`),
+  CONSTRAINT `atividade_ibfk_1` FOREIGN KEY (`id_ministrante`) REFERENCES `ministrante` (`id`),
+  CONSTRAINT `atividade_ibfk_2` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`)
+);
+CREATE TABLE `patrocinador` (
+  `id` int(11) NOT NULL,
+  `nome_empresa` varchar(100) NOT NULL,
+  `logo` varchar(100) NOT NULL,
+  `ativo_site` tinyint(1) NOT NULL,
+  `id_cota` int(11) NOT NULL,
+  `ordem_site` int(11) NOT NULL,
+  `link_website` varchar(200) DEFAULT NULL,
+  `ultima_atualizacao_em` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`,`ordem_site`),
+  KEY `id_cota` (`id_cota`),
+  CONSTRAINT `patrocinador_ibfk_1` FOREIGN KEY (`id_cota`) REFERENCES `cota_patrocinio` (`id`)
+);
+CREATE TABLE `usuario` (
+  `id` int(11) NOT NULL,
+  `email` varchar(64) NOT NULL,
+  `senha` varchar(256) NOT NULL,
+  `primeiro_nome` varchar(64) NOT NULL,
+  `sobrenome` varchar(64) NOT NULL,
+  `id_curso` int(11) NOT NULL,
+  `id_cidade` int(11) NOT NULL,
+  `id_instituicao` int(11) NOT NULL,
+  `token_email` varchar(90) NOT NULL,
+  `data_nascimento` date NOT NULL,
+  `admin` tinyint(1) DEFAULT NULL,
+  `autenticado` tinyint(1) DEFAULT NULL,
+  `email_verificado` tinyint(1) DEFAULT NULL,
+  `ultimo_login` datetime DEFAULT NULL,
+  `data_cadastro` datetime DEFAULT NULL,
+  `salt` varchar(30) NOT NULL,
+  `token_alteracao_senha` varchar(90) DEFAULT NULL,
+  `salt_alteracao_senha` varchar(30) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`),
+  KEY `id_curso` (`id_curso`),
+  KEY `id_cidade` (`id_cidade`),
+  KEY `id_instituicao` (`id_instituicao`),
+  CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_curso`) REFERENCES `curso` (`id`),
+  CONSTRAINT `usuario_ibfk_2` FOREIGN KEY (`id_cidade`) REFERENCES `cidade` (`id`),
+  CONSTRAINT `usuario_ibfk_3` FOREIGN KEY (`id_instituicao`) REFERENCES `instituicao` (`id`)
+);
 CREATE TABLE `participante` (
   `id` int(11) NOT NULL,
   `id_usuario` int(11) DEFAULT NULL,
@@ -133,23 +160,23 @@ CREATE TABLE `participante` (
   CONSTRAINT `participante_ibfk_2` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`),
   CONSTRAINT `participante_ibfk_3` FOREIGN KEY (`id_camiseta`) REFERENCES `camiseta` (`id`)
 );
-CREATE TABLE `patrocinador` (
+CREATE TABLE `membro_de_equipe` (
   `id` int(11) NOT NULL,
-  `nome_empresa` varchar(100) NOT NULL,
-  `logo` varchar(100) NOT NULL,
-  `ativo_site` tinyint(1) NOT NULL,
-  `id_cota` int(11) NOT NULL,
-  `ordem_site` int(11) NOT NULL,
-  `link_website` varchar(200) DEFAULT NULL,
-  `ultima_atualizacao_em` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`,`ordem_site`),
-  KEY `id_cota` (`id_cota`),
-  CONSTRAINT `patrocinador_ibfk_1` FOREIGN KEY (`id_cota`) REFERENCES `cota_patrocinio` (`id`)
-);
-CREATE TABLE `permissao` (
-  `id` int(11) NOT NULL,
-  `nome` varchar(100) NOT NULL,
-  PRIMARY KEY (`id`)
+  `id_usuario` int(11) NOT NULL,
+  `foto` varchar(100) DEFAULT NULL,
+  `email_secomp` varchar(254) DEFAULT NULL,
+  `id_cargo` int(11) NOT NULL,
+  `id_diretoria` int(11) NOT NULL,
+  `id_evento` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_usuario` (`id_usuario`),
+  KEY `id_cargo` (`id_cargo`),
+  KEY `id_diretoria` (`id_diretoria`),
+  KEY `id_evento` (`id_evento`),
+  CONSTRAINT `membro_de_equipe_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`),
+  CONSTRAINT `membro_de_equipe_ibfk_2` FOREIGN KEY (`id_cargo`) REFERENCES `cargo` (`id`),
+  CONSTRAINT `membro_de_equipe_ibfk_3` FOREIGN KEY (`id_diretoria`) REFERENCES `diretoria` (`id`),
+  CONSTRAINT `membro_de_equipe_ibfk_4` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`)
 );
 CREATE TABLE `presenca` (
   `id` int(11) NOT NULL,
@@ -205,34 +232,6 @@ CREATE TABLE `relacao_permissao_usuario` (
   KEY `id_permissao` (`id_permissao`),
   CONSTRAINT `relacao_permissao_usuario_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`),
   CONSTRAINT `relacao_permissao_usuario_ibfk_2` FOREIGN KEY (`id_permissao`) REFERENCES `permissao` (`id`)
-);
-CREATE TABLE `usuario` (
-  `id` int(11) NOT NULL,
-  `email` varchar(64) NOT NULL,
-  `senha` varchar(256) NOT NULL,
-  `primeiro_nome` varchar(64) NOT NULL,
-  `sobrenome` varchar(64) NOT NULL,
-  `id_curso` int(11) NOT NULL,
-  `id_cidade` int(11) NOT NULL,
-  `id_instituicao` int(11) NOT NULL,
-  `token_email` varchar(90) NOT NULL,
-  `data_nascimento` date NOT NULL,
-  `admin` tinyint(1) DEFAULT NULL,
-  `autenticado` tinyint(1) DEFAULT NULL,
-  `email_verificado` tinyint(1) DEFAULT NULL,
-  `ultimo_login` datetime DEFAULT NULL,
-  `data_cadastro` datetime DEFAULT NULL,
-  `salt` varchar(30) NOT NULL,
-  `token_alteracao_senha` varchar(90) DEFAULT NULL,
-  `salt_alteracao_senha` varchar(30) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `email` (`email`),
-  KEY `id_curso` (`id_curso`),
-  KEY `id_cidade` (`id_cidade`),
-  KEY `id_instituicao` (`id_instituicao`),
-  CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`id_curso`) REFERENCES `curso` (`id`),
-  CONSTRAINT `usuario_ibfk_2` FOREIGN KEY (`id_cidade`) REFERENCES `cidade` (`id`),
-  CONSTRAINT `usuario_ibfk_3` FOREIGN KEY (`id_instituicao`) REFERENCES `instituicao` (`id`)
 );
 
 INSERT INTO evento (id, edicao, data_hora_inicio, data_hora_fim, inicio_inscricoes_evento, fim_inscricoes_evento, ano) VALUES (1, 10, '2019-09-09 08:30:00', '2019-09-13 18:30:00', '2019-02-10 12:00:00', '2019-08-10 23:59:00', 2019);

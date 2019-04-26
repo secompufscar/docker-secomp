@@ -15,7 +15,6 @@ services:
 
     flask:
         build: .
-        container_name: flask
         environment:
             FLASK_CONFIGURATION: ${FLASK_CONFIGURATION}
         ports:
