@@ -4,8 +4,8 @@ services:
     db:
         image: mysql:latest
         environment:
-            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-            MYSQL_DATABASE: ${MYSQL_DATABASE}
+            MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-root}"
+            MYSQL_DATABASE: "${MYSQL_DATABASE:-test}"
         volumes:
             - ./volumes/db:/docker-entrypoint-initdb.d
             - ./volumes/db/data:/var/lib/mysql
@@ -16,7 +16,8 @@ services:
     flask:
         build: .
         environment:
-            FLASK_CONFIGURATION: ${FLASK_CONFIGURATION}
+            FLASK_CONFIGURATION: "${FLASK_CONFIGURATION:-default}"
+            GUNICORN_WORKERS: "4"
         ports:
             - "8000:8000"
         depends_on:
