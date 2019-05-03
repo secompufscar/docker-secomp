@@ -6,6 +6,8 @@ services:
         environment:
             MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-root}"
             MYSQL_DATABASE: "${MYSQL_DATABASE:-test}"
+            MYSQL_USER: "${MYSQL_USER}"
+            MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
         volumes:
             - ./volumes/db:/docker-entrypoint-initdb.d
             - ./volumes/db/data:/var/lib/mysql
@@ -17,7 +19,7 @@ services:
         build: .
         environment:
             FLASK_CONFIGURATION: "${FLASK_CONFIGURATION:-default}"
-            GUNICORN_WORKERS: "4"
+            GUNICORN_WORKERS: "${GUNICORN_WORKERS:-4}"
         ports:
             - "8000:8000"
         depends_on:
