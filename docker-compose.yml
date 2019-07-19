@@ -1,13 +1,13 @@
-version: '3.7'
+version: '3'
 
 services:
     db:
         image: mysql:latest
         environment:
             MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-root}"
-            MYSQL_DATABASE: "${MYSQL_DATABASE:-test}"
-            MYSQL_USER: "${MYSQL_USER}"
-            MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+            MYSQL_DATABASE: "${MYSQL_DATABASE:-db}"
+            MYSQL_USER: "${MYSQL_USER:-root}"
+            MYSQL_PASSWORD: "${MYSQL_PASSWORD:-root}"
         volumes:
             - ./volumes/db:/docker-entrypoint-initdb.d
             - ./volumes/db/data:/var/lib/mysql
@@ -37,6 +37,8 @@ services:
         ports:
             - "80:80"
             - "443:443"
+        depends_on: 
+            - flask
         command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
     certbot:

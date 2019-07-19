@@ -1,12 +1,16 @@
-FROM python:3-alpine
+FROM python:3-alpine as builder
 
-RUN  apk add --no-cache --virtual build-deps gcc musl-dev libffi-dev
+RUN mkdir /build \
+	&& apk add --no-cache --virtual build-deps gcc musl-dev libffi-dev openssl-dev
+WORKDIR /build
+COPY ./site-secomp/requirements.txt /requirements.txt
+RUN pip install --install-option="--prefix=/build" -r /requirements.txt
 
+FROM python:3-alpine as runner
+
+COPY --from=builder /build /usr/local
 COPY ./site-secomp /site-secomp
 WORKDIR /site-secomp
-
-RUN pip install --no-cache-dir -r requirements.txt
-RUN pip install --no-cache-dir requests
 
 ENV PATH /usr/local/bin:$PATH
 ENV FLASK_CONFIGURATION default
