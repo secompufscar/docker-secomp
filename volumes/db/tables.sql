@@ -1,6 +1,11 @@
 DROP DATABASE IF EXISTS `secomp`;
-CREATE DATABASE `secomp`;
+CREATE DATABASE `secomp` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE `secomp`;
+CREATE TABLE `area` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(48) NOT NULL,
+  PRIMARY KEY (`id`)
+);
 CREATE TABLE `cargo` (
   `id` int(11) NOT NULL,
   `nome` varchar(100) NOT NULL,
@@ -47,6 +52,11 @@ CREATE TABLE `permissao` (
   `nome` varchar(100) NOT NULL,
   PRIMARY KEY (`id`)
 );
+CREATE TABLE `tipo_atividade` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `nome` varchar(100) NOT NULL,
+   PRIMARY KEY (`id`)
+);
 CREATE TABLE `ministrante` (
   `id` int(11) NOT NULL,
   `pagar_gastos` tinyint(1) NOT NULL,
@@ -68,6 +78,26 @@ CREATE TABLE `ministrante` (
   `github` varchar(64) DEFAULT NULL,
   PRIMARY KEY (`id`)
 );
+CREATE TABLE `dados_hospedagem_transporte` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_ministrante` int(11) DEFAULT NULL,
+  `id_evento` int(11) DEFAULT NULL,
+  `cidade_origem` varchar(64) NOT NULL,
+  `data_chegada_origem` date NOT NULL,
+  `data_chegada_partida` date NOT NULL,
+  `transporte_ida_volta` tinyint(1) NOT NULL,
+  `opcoes_transporte_ida_volta` int(11) DEFAULT NULL,
+  `transporte_sanca` tinyint(1) NOT NULL,
+  `opcoes_transporte_sanca` int(11) DEFAULT NULL,
+  `hospedagem` tinyint(1) NOT NULL,
+  `necessidades_hospedagem` varchar(256) DEFAULT NULL,
+  `observacoes` varchar(256) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_ministrante` (`id_ministrante`),
+  KEY `id_evento` (`id_evento`),
+  CONSTRAINT `dados_hospedagem_transporte_ibfk_1` FOREIGN KEY (`id_ministrante`) REFERENCES `ministrante` (`id`),
+  CONSTRAINT `dados_hospedagem_transporte_ibfk_2` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`)
+);
 CREATE TABLE `camiseta` (
   `id` int(11) NOT NULL,
   `id_evento` int(11) NOT NULL,
@@ -80,26 +110,64 @@ CREATE TABLE `camiseta` (
   CONSTRAINT `camiseta_ibfk_1` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`)
 );
 CREATE TABLE `atividade` (
-  `id` int(11) NOT NULL,
-  `id_ministrante` int(11) DEFAULT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_evento` int(11) DEFAULT NULL,
-  `vagas_totais` int(11) NOT NULL,
-  `vagas_disponiveis` int(11) NOT NULL,
-  `pre_requisitos` varchar(512) NOT NULL,
-  `pre_requisitos_recomendados` varchar(512) NOT NULL,
+  `id_tipo` int(11) DEFAULT NULL,
+  `vagas_totais` int(11) DEFAULT NULL,
+  `vagas_disponiveis` int(11) DEFAULT NULL,
   `ativo` tinyint(1) NOT NULL,
-  `tipo` int(11) NOT NULL,
-  `data_hora` datetime NOT NULL,
-  `local` varchar(64) NOT NULL,
-  `titulo` varchar(64) NOT NULL,
-  `descricao` varchar(1024) NOT NULL,
-  `recursos_necessarios` varchar(512) NOT NULL,
-  `observacoes` varchar(512) NOT NULL,
+  `data_hora` datetime DEFAULT NULL,
+  `local` varchar(64) DEFAULT NULL,
+  `titulo` varchar(64) DEFAULT NULL,
+  `descricao` varchar(1024) DEFAULT NULL,
+  `observacoes` varchar(512) DEFAULT NULL,
+  `url_codigo` varchar(255) DEFAULT NULL,
+  `atividade_cadastrada` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `id_ministrante` (`id_ministrante`),
   KEY `id_evento` (`id_evento`),
-  CONSTRAINT `atividade_ibfk_1` FOREIGN KEY (`id_ministrante`) REFERENCES `ministrante` (`id`),
-  CONSTRAINT `atividade_ibfk_2` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`)
+  KEY `id_tipo` (`id_tipo`),
+  CONSTRAINT `atividade_ibfk_1` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`),
+  CONSTRAINT `atividade_ibfk_2` FOREIGN KEY (`id_tipo`) REFERENCES `tipo_atividade` (`id`)
+);
+CREATE TABLE `info_feira_de_projetos` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_atividade` int(11) DEFAULT NULL,
+  `necessidades` varchar(1024) DEFAULT NULL,
+  `planejamento` varchar(1024) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_atividade` (`id_atividade`),
+  CONSTRAINT `info_feira_de_projetos_ibfk_1` FOREIGN KEY (`id_atividade`) REFERENCES `atividade` (`id`)
+);
+CREATE TABLE `info_minicurso` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_atividade` int(11) DEFAULT NULL,
+  `pre_requisitos` varchar(128) DEFAULT NULL,
+  `planejamento` varchar(128) DEFAULT NULL,
+  `apresentacao_extra` varchar(128) DEFAULT NULL,
+  `material` varchar(128) DEFAULT NULL,
+  `requisitos_ide` varchar(1024) DEFAULT NULL,
+  `requisitos_bibliotecas_pacotes` varchar(1024) DEFAULT NULL,
+  `requisitos_dependencias` varchar(1024) DEFAULT NULL,
+  `requisitos_sistema` varchar(1024) DEFAULT NULL,
+  `requisitos_observacoes` varchar(1024) DEFAULT NULL,
+  `requisitos_github` varchar(1024) DEFAULT NULL,
+  `requisitos_hardware` varchar(1024) DEFAULT NULL,
+  `dicas_instalacao` varchar(1024) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_atividade` (`id_atividade`),
+  CONSTRAINT `info_minicurso_ibfk_1` FOREIGN KEY (`id_atividade`) REFERENCES `atividade` (`id`)
+);
+CREATE TABLE `info_palestra` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_atividade` int(11) DEFAULT NULL,
+  `planejamento` varchar(128) DEFAULT NULL,
+  `apresentacao_extra` varchar(128) DEFAULT NULL,
+  `material` varchar(128) DEFAULT NULL,
+  `requisitos_tecnicos` varchar(1024) DEFAULT NULL,
+  `perguntas` varchar(1024) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_atividade` (`id_atividade`),
+  CONSTRAINT `info_palestra_ibfk_1` FOREIGN KEY (`id_atividade`) REFERENCES `atividade` (`id`)
 );
 CREATE TABLE `patrocinador` (
   `id` int(11) NOT NULL,
@@ -115,22 +183,22 @@ CREATE TABLE `patrocinador` (
   CONSTRAINT `patrocinador_ibfk_1` FOREIGN KEY (`id_cota`) REFERENCES `cota_patrocinio` (`id`)
 );
 CREATE TABLE `usuario` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `email` varchar(64) NOT NULL,
-  `senha` varchar(256) NOT NULL,
-  `primeiro_nome` varchar(64) NOT NULL,
-  `sobrenome` varchar(64) NOT NULL,
-  `id_curso` int(11) NOT NULL,
-  `id_cidade` int(11) NOT NULL,
-  `id_instituicao` int(11) NOT NULL,
-  `token_email` varchar(90) NOT NULL,
-  `data_nascimento` date NOT NULL,
+  `senha` varchar(256) DEFAULT NULL,
+  `primeiro_nome` varchar(64) DEFAULT NULL,
+  `sobrenome` varchar(64) DEFAULT NULL,
+  `id_curso` int(11) DEFAULT NULL,
+  `id_cidade` int(11) DEFAULT NULL,
+  `id_instituicao` int(11) DEFAULT NULL,
+  `token_email` varchar(90) DEFAULT NULL,
+  `data_nascimento` date DEFAULT NULL,
   `admin` tinyint(1) DEFAULT NULL,
   `autenticado` tinyint(1) DEFAULT NULL,
   `email_verificado` tinyint(1) DEFAULT NULL,
   `ultimo_login` datetime DEFAULT NULL,
   `data_cadastro` datetime DEFAULT NULL,
-  `salt` varchar(30) NOT NULL,
+  `salt` varchar(30) DEFAULT NULL,
   `token_alteracao_senha` varchar(90) DEFAULT NULL,
   `salt_alteracao_senha` varchar(30) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -143,22 +211,33 @@ CREATE TABLE `usuario` (
   CONSTRAINT `usuario_ibfk_3` FOREIGN KEY (`id_instituicao`) REFERENCES `instituicao` (`id`)
 );
 CREATE TABLE `participante` (
-  `id` int(11) NOT NULL,
-  `id_usuario` int(11) DEFAULT NULL,
-  `id_evento` int(11) NOT NULL,
-  `pacote` tinyint(1) NOT NULL,
-  `pagamento` tinyint(1) NOT NULL,
-  `id_camiseta` int(11) DEFAULT NULL,
-  `data_inscricao` datetime DEFAULT NULL,
-  `credenciado` tinyint(1) NOT NULL,
-  `opcao_coffee` int(11) NOT NULL,
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `id_usuario` int(11) DEFAULT NULL,
+      `id_evento` int(11) NOT NULL,
+      `pacote` tinyint(1) NOT NULL,
+      `id_camiseta` int(11) DEFAULT NULL,
+      `data_inscricao` datetime DEFAULT NULL,
+      `credenciado` tinyint(1) NOT NULL,
+      `opcao_coffee` int(11) NOT NULL,
+      PRIMARY KEY (`id`),
+      KEY `id_usuario` (`id_usuario`),
+      KEY `id_evento` (`id_evento`),
+      KEY `id_camiseta` (`id_camiseta`),
+      CONSTRAINT `participante_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`),
+      CONSTRAINT `participante_ibfk_2` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`),
+      CONSTRAINT `participante_ibfk_3` FOREIGN KEY (`id_camiseta`) REFERENCES `camiseta` (`id`)
+);
+CREATE TABLE `pagamento` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_participante` int(11) DEFAULT NULL,
+  `payment_id` varchar(200) DEFAULT NULL,
+  `payer_id` varchar(200) DEFAULT NULL,
+  `descricao` varchar(200) NOT NULL,
+  `valor` float NOT NULL,
+  `efetuado` tinyint(1) NOT NULL,
   PRIMARY KEY (`id`),
-  KEY `id_usuario` (`id_usuario`),
-  KEY `id_evento` (`id_evento`),
-  KEY `id_camiseta` (`id_camiseta`),
-  CONSTRAINT `participante_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`),
-  CONSTRAINT `participante_ibfk_2` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`),
-  CONSTRAINT `participante_ibfk_3` FOREIGN KEY (`id_camiseta`) REFERENCES `camiseta` (`id`)
+  KEY `id_participante` (`id_participante`),
+  CONSTRAINT `pagamento_ibfk_1` FOREIGN KEY (`id_participante`) REFERENCES `participante` (`id`)
 );
 CREATE TABLE `membro_de_equipe` (
   `id` int(11) NOT NULL,
@@ -193,10 +272,22 @@ CREATE TABLE `presenca` (
   CONSTRAINT `presenca_ibfk_2` FOREIGN KEY (`id_participante`) REFERENCES `participante` (`id`),
   CONSTRAINT `presenca_ibfk_3` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`)
 );
+CREATE TABLE `relacao_atividade_area` (
+      `id` int(11) NOT NULL AUTO_INCREMENT,
+      `id_atividade` int(11) DEFAULT NULL,
+      `id_area` int(11) DEFAULT NULL,
+      PRIMARY KEY (`id`),
+      KEY `id_atividade` (`id_atividade`),
+      KEY `id_area` (`id_area`),
+      CONSTRAINT `relacao_atividade_area_ibfk_1` FOREIGN KEY (`id_atividade`) REFERENCES `atividade` (`id`),
+      CONSTRAINT `relacao_atividade_area_ibfk_2` FOREIGN KEY (`id_area`) REFERENCES `area` (`id`)
+);
 CREATE TABLE `relacao_atividade_ministrante` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_atividade` int(11) DEFAULT NULL,
   `id_ministrante` int(11) DEFAULT NULL,
+  `confirmado` tinyint(1) DEFAULT NULL,
+  `admin_atividade` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_atividade` (`id_atividade`),
   KEY `id_ministrante` (`id_ministrante`),
@@ -212,6 +303,16 @@ CREATE TABLE `relacao_atividade_participante` (
   KEY `id_participante` (`id_participante`),
   CONSTRAINT `relacao_atividade_participante_ibfk_1` FOREIGN KEY (`id_atividade`) REFERENCES `atividade` (`id`),
   CONSTRAINT `relacao_atividade_participante_ibfk_2` FOREIGN KEY (`id_participante`) REFERENCES `participante` (`id`)
+);
+CREATE TABLE `relacao_atividade_patrocinador` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_atividade` int(11) DEFAULT NULL,
+  `id_patrocinador` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_atividade` (`id_atividade`),
+  KEY `id_patrocinador` (`id_patrocinador`),
+  CONSTRAINT `relacao_atividade_patrocinador_ibfk_1` FOREIGN KEY (`id_atividade`) REFERENCES `atividade` (`id`),
+  CONSTRAINT `relacao_atividade_patrocinador_ibfk_2` FOREIGN KEY (`id_patrocinador`) REFERENCES `patrocinador` (`id`)
 );
 CREATE TABLE `relacao_patrocinador_evento` (
   `id` int(11) NOT NULL,
