@@ -1,2 +1,13 @@
+# docker environment variables
+.env
+
 # mysql data
 volumes/db/data/
+volumes/db/migrations/
+
+# certbot data
+volumes/certbot/
+
+# python cache and compiled files
+__pycache__/
+*.pyc

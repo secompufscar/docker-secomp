@@ -20,6 +20,8 @@ services:
         environment:
             FLASK_CONFIGURATION: "${FLASK_CONFIGURATION:-default}"
             GUNICORN_WORKERS: "${GUNICORN_WORKERS:-4}"
+        volumes:
+            - ./volumes/db/migrations:/site-secomp/migrations
         expose:
             - "8000"
         depends_on:
