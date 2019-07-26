@@ -4,4 +4,5 @@
 .gitattributes
 .gitmodules
 README.md
+LICENSE
 docker-compose.yml
