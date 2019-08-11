@@ -1,6 +1,6 @@
 #!/bin/bash
 
-domains=(secompufscar.com.br)
+domains=(beta.secompufscar.com.br)
 rsa_key_size=4096
 data_path="./volumes/certbot"
 email="alcidesmig@gmail.com" # Adding a valid address is strongly recommended
