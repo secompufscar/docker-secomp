@@ -58,6 +58,17 @@ CREATE TABLE `evento` (
   `ano` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `flag` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `codigo` varchar(45) NOT NULL,
+  `pontos` int(11) NOT NULL,
+  `ativa` tinyint(1) DEFAULT NULL,
+  `quantidade_utilizada` int(11) DEFAULT NULL,
+  `evento_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `evento_id` (`evento_id`),
+  CONSTRAINT `flag_ibfk_1` FOREIGN KEY (`evento_id`) REFERENCES `evento` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `atividade` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_evento` int(11) DEFAULT NULL,
@@ -126,6 +137,7 @@ CREATE TABLE `participante` (
   `data_inscricao` datetime DEFAULT NULL,
   `credenciado` tinyint(1) NOT NULL,
   `opcao_coffee` int(11) NOT NULL,
+  `pontuacao` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_usuario` (`id_usuario`),
   KEY `id_evento` (`id_evento`),
@@ -133,6 +145,17 @@ CREATE TABLE `participante` (
   CONSTRAINT `participante_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`),
   CONSTRAINT `participante_ibfk_2` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`),
   CONSTRAINT `participante_ibfk_3` FOREIGN KEY (`id_camiseta`) REFERENCES `camiseta` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `admin_model_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) DEFAULT NULL,
+  `acao` varchar(200) NOT NULL,
+  `nome_modelo` varchar(200) DEFAULT NULL,
+  `id_modelo` int(11) DEFAULT NULL,
+  `data_hora_acao` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_usuario` (`id_usuario`),
+  CONSTRAINT `admin_model_history_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `ministrante` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -331,7 +354,16 @@ CREATE TABLE `relacao_permissao_usuario` (
   CONSTRAINT `relacao_permissao_usuario_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`),
   CONSTRAINT `relacao_permissao_usuario_ibfk_2` FOREIGN KEY (`id_permissao`) REFERENCES `permissao` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
+CREATE TABLE `relacao_participante_flags` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_flag` int(11) DEFAULT NULL,
+  `id_participante` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_flag` (`id_flag`),
+  KEY `id_participante` (`id_participante`),
+  CONSTRAINT `relacao_participante_flags_ibfk_1` FOREIGN KEY (`id_flag`) REFERENCES `flag` (`id`),
+  CONSTRAINT `relacao_participante_flags_ibfk_2` FOREIGN KEY (`id_participante`) REFERENCES `participante` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 INSERT INTO evento (id, edicao, data_hora_inicio, data_hora_fim, inicio_inscricoes_evento, fim_inscricoes_evento, ano) VALUES (1, 10, '2019-09-09 08:30:00', '2019-09-13 18:30:00', '2019-02-10 12:00:00', '2019-08-10 23:59:00', 2019);
 INSERT INTO curso (id, nome) VALUES (1, 'Ciência da Computação'), (2, 'Engenharia da Computação');
 INSERT INTO instituicao (id, nome) VALUES (1, 'UFSCar'), (2, 'USP'), (3, 'UNESP'), (4, 'Unicamp');
