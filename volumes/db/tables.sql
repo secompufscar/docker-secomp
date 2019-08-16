@@ -48,6 +48,15 @@ CREATE TABLE `instituicao` (
   `nome` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `urlconteudo` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `descricao` varchar(100) NOT NULL,
+  `codigo` varchar(200) NOT NULL,
+  `ultimo_gerado` tinyint(1) NOT NULL,
+  `valido` tinyint(1) NOT NULL,
+  `numero_cadastros` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `evento` (
   `id` int(11) NOT NULL,
   `edicao` int(11) NOT NULL,
@@ -76,7 +85,8 @@ CREATE TABLE `atividade` (
   `vagas_totais` int(11) DEFAULT NULL,
   `vagas_disponiveis` int(11) DEFAULT NULL,
   `ativo` tinyint(1) NOT NULL,
-  `data_hora` datetime DEFAULT NULL,
+  `data_hora_inicio` datetime DEFAULT NULL,
+  `data_hora_fim` datetime DEFAULT NULL,
   `local` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `titulo` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `descricao` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -173,6 +183,13 @@ CREATE TABLE `ministrante` (
   PRIMARY KEY (`id`),
   KEY `id_usuario` (`id_usuario`),
   CONSTRAINT `ministrante_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `como_conheceu` (
+  `id_usuario` int(11) NOT NULL,
+  `opcao` int(11) NOT NULL,
+  `outro` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id_usuario`),
+  CONSTRAINT `como_conheceu_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `dados_hospedagem_transporte` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
