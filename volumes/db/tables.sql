@@ -64,7 +64,12 @@ CREATE TABLE `evento` (
   `data_hora_fim` datetime NOT NULL,
   `inicio_inscricoes_evento` datetime NOT NULL,
   `fim_inscricoes_evento` datetime NOT NULL,
+  `abertura_minicursos_1_etapa` datetime NOT NULL,
+  `abertura_minicursos_2_etapa` datetime NOT NULL,
+  `fechamento_minicursos_1_etapa` datetime NOT NULL,
+  `fechamento_minicursos_2_etapa` datetime NOT NULL,
   `ano` int(11) DEFAULT NULL,
+  `preco_kit` float DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `flag` (
@@ -142,19 +147,21 @@ CREATE TABLE `participante` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_usuario` int(11) DEFAULT NULL,
   `id_evento` int(11) NOT NULL,
-  `pacote` tinyint(1) NOT NULL,
-  `id_camiseta` int(11) DEFAULT NULL,
   `data_inscricao` datetime DEFAULT NULL,
   `credenciado` tinyint(1) NOT NULL,
   `opcao_coffee` int(11) NOT NULL,
   `pontuacao` int(11) DEFAULT NULL,
+  `minicurso_etapa_1` int(11) DEFAULT NULL,
+  `minicurso_etapa_2` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_usuario` (`id_usuario`),
   KEY `id_evento` (`id_evento`),
-  KEY `id_camiseta` (`id_camiseta`),
+  KEY `minicurso_etapa_1` (`minicurso_etapa_1`),
+  KEY `minicurso_etapa_2` (`minicurso_etapa_2`),
   CONSTRAINT `participante_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`),
   CONSTRAINT `participante_ibfk_2` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`),
-  CONSTRAINT `participante_ibfk_3` FOREIGN KEY (`id_camiseta`) REFERENCES `camiseta` (`id`)
+  CONSTRAINT `participante_ibfk_3` FOREIGN KEY (`minicurso_etapa_1`) REFERENCES `atividade` (`id`),
+  CONSTRAINT `participante_ibfk_4` FOREIGN KEY (`minicurso_etapa_2`) REFERENCES `atividade` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `admin_model_history` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -185,10 +192,12 @@ CREATE TABLE `ministrante` (
   CONSTRAINT `ministrante_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `como_conheceu` (
-  `id_usuario` int(11) NOT NULL,
+  `id` int(11) NOT NULL,
+  `id_usuario` int(11) DEFAULT NULL,
   `opcao` int(11) NOT NULL,
   `outro` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`id_usuario`),
+  PRIMARY KEY (`id`),
+  KEY `id_usuario` (`id_usuario`),
   CONSTRAINT `como_conheceu_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `dados_hospedagem_transporte` (
@@ -272,14 +281,32 @@ CREATE TABLE `membro_de_equipe` (
 CREATE TABLE `pagamento` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_participante` int(11) DEFAULT NULL,
+  `id_camiseta` int(11) DEFAULT NULL,
   `payment_id` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `payer_id` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `descricao` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `valor` float NOT NULL,
   `efetuado` tinyint(1) NOT NULL,
+  `arquivo_comprovante` varchar(100) DEFAULT NULL,
+  `comprovante_enviado` tinyint(1) NOT NULL,
+  `metodo_pagamento` varchar(100) NOT NULL,
+  `rejeitado` tinyint(1) NOT NULL,
+  `data_hora_pagamento` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_participante` (`id_participante`),
-  CONSTRAINT `pagamento_ibfk_1` FOREIGN KEY (`id_participante`) REFERENCES `participante` (`id`)
+  KEY `id_camiseta` (`id_camiseta`),
+  CONSTRAINT `pagamento_ibfk_1` FOREIGN KEY (`id_participante`) REFERENCES `participante` (`id`),
+  CONSTRAINT `pagamento_ibfk_2` FOREIGN KEY (`id_camiseta`) REFERENCES `camiseta` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `cupom_desconto` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_pagamento` int(11) DEFAULT NULL,
+  `nome` varchar(200) DEFAULT NULL,
+  `valor` float NOT NULL,
+  `usado` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_pagamento` (`id_pagamento`),
+  CONSTRAINT `cupom_desconto_ibfk_1` FOREIGN KEY (`id_pagamento`) REFERENCES `pagamento` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `patrocinador` (
   `id` int(11) NOT NULL,
