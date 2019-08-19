@@ -408,7 +408,7 @@ CREATE TABLE `relacao_participante_flags` (
   CONSTRAINT `relacao_participante_flags_ibfk_1` FOREIGN KEY (`id_flag`) REFERENCES `flag` (`id`),
   CONSTRAINT `relacao_participante_flags_ibfk_2` FOREIGN KEY (`id_participante`) REFERENCES `participante` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-INSERT INTO evento (id, edicao, data_hora_inicio, data_hora_fim, inicio_inscricoes_evento, fim_inscricoes_evento, ano) VALUES (1, 10, '2019-09-09 08:30:00', '2019-09-13 18:30:00', '2019-02-10 12:00:00', '2019-08-10 23:59:00', 2019);
+INSERT INTO evento (id, edicao, data_hora_inicio, data_hora_fim, inicio_inscricoes_evento, fim_inscricoes_evento, ano, abertura_minicursos_1_etapa, fechamento_minicursos_1_etapa, abertura_minicursos_2_etapa, fechamento_minicursos_2_etapa) VALUES (1, 10, '2019-09-09 08:30:00', '2019-09-13 18:30:00', '2019-02-10 12:00:00', '2019-08-10 23:59:00', 2019, '2019-08-10 23:59:00', '2019-08-10 23:59:00', '2019-08-10 23:59:00', '2019-08-10 23:59:00');
 INSERT INTO curso (id, nome) VALUES (1, 'Ciência da Computação'), (2, 'Engenharia da Computação');
 INSERT INTO instituicao (id, nome) VALUES (1, 'UFSCar'), (2, 'USP'), (3, 'UNESP'), (4, 'Unicamp');
 INSERT INTO cidade (id, nome) VALUES (1, 'São Carlos'), (2, 'São Paulo'), (3, 'Campinas'),(4, 'Rio Claro');
