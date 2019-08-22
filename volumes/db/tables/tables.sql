@@ -192,7 +192,7 @@ CREATE TABLE `ministrante` (
   CONSTRAINT `ministrante_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `como_conheceu` (
-  `id` int(11) NOT NULL,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_usuario` int(11) DEFAULT NULL,
   `opcao` int(11) NOT NULL,
   `outro` varchar(200) DEFAULT NULL,
