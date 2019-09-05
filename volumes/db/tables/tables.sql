@@ -153,7 +153,8 @@ CREATE TABLE `participante` (
   `pontuacao` int(11) DEFAULT NULL,
   `minicurso_etapa_1` int(11) DEFAULT NULL,
   `minicurso_etapa_2` int(11) DEFAULT NULL,
-  `wifi` tinyint(1) DEFAULT NULL;
+  `uuid` varchar(512) DEFAULT NULL,  
+  `wifi` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_usuario` (`id_usuario`),
   KEY `id_evento` (`id_evento`),
@@ -266,6 +267,7 @@ CREATE TABLE `membro_de_equipe` (
   `id_usuario` int(11) NOT NULL,
   `foto` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email_secomp` varchar(254) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `descricao` varchar(254) DEFAULT NULL,
   `id_cargo` int(11) NOT NULL,
   `id_diretoria` int(11) NOT NULL,
   `id_evento` int(11) NOT NULL,
@@ -292,6 +294,7 @@ CREATE TABLE `pagamento` (
   `comprovante_enviado` tinyint(1) NOT NULL,
   `metodo_pagamento` varchar(100) NOT NULL,
   `rejeitado` tinyint(1) NOT NULL,
+  `cancelado` tinyint(1) NOT NULL,
   `data_hora_pagamento` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_participante` (`id_participante`),
@@ -302,7 +305,7 @@ CREATE TABLE `pagamento` (
 CREATE TABLE `cupom_desconto` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_pagamento` int(11) DEFAULT NULL,
-  `nome` varchar(200) DEFAULT NULL,
+  `nome` varchar(200) NOT NULL,
   `valor` float NOT NULL,
   `usado` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
@@ -312,13 +315,13 @@ CREATE TABLE `cupom_desconto` (
 CREATE TABLE `patrocinador` (
   `id` int(11) NOT NULL,
   `nome_empresa` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `logo` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `logo` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ativo_site` tinyint(1) NOT NULL,
   `id_cota` int(11) NOT NULL,
-  `ordem_site` int(11) NOT NULL,
+  `ordem_site` int(11) DEFAULT NULL,
   `link_website` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ultima_atualizacao_em` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`,`ordem_site`),
+  PRIMARY KEY (`id`),
   KEY `id_cota` (`id_cota`),
   CONSTRAINT `patrocinador_ibfk_1` FOREIGN KEY (`id_cota`) REFERENCES `cota_patrocinio` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
