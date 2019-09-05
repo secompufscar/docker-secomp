@@ -153,6 +153,7 @@ CREATE TABLE `participante` (
   `pontuacao` int(11) DEFAULT NULL,
   `minicurso_etapa_1` int(11) DEFAULT NULL,
   `minicurso_etapa_2` int(11) DEFAULT NULL,
+  `wifi` tinyint(1) DEFAULT NULL;
   PRIMARY KEY (`id`),
   KEY `id_usuario` (`id_usuario`),
   KEY `id_evento` (`id_evento`),
