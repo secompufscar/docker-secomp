@@ -48,6 +48,15 @@ CREATE TABLE `instituicao` (
   `nome` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `urlconteudo` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `descricao` varchar(100) NOT NULL,
+  `codigo` varchar(200) NOT NULL,
+  `ultimo_gerado` tinyint(1) NOT NULL,
+  `valido` tinyint(1) NOT NULL,
+  `numero_cadastros` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `evento` (
   `id` int(11) NOT NULL,
   `edicao` int(11) NOT NULL,
@@ -55,8 +64,24 @@ CREATE TABLE `evento` (
   `data_hora_fim` datetime NOT NULL,
   `inicio_inscricoes_evento` datetime NOT NULL,
   `fim_inscricoes_evento` datetime NOT NULL,
+  `abertura_minicursos_1_etapa` datetime NOT NULL,
+  `abertura_minicursos_2_etapa` datetime NOT NULL,
+  `fechamento_minicursos_1_etapa` datetime NOT NULL,
+  `fechamento_minicursos_2_etapa` datetime NOT NULL,
   `ano` int(11) DEFAULT NULL,
+  `preco_kit` float DEFAULT NULL,
   PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `flag` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `codigo` varchar(45) NOT NULL,
+  `pontos` int(11) NOT NULL,
+  `ativa` tinyint(1) DEFAULT NULL,
+  `quantidade_utilizada` int(11) DEFAULT NULL,
+  `evento_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `evento_id` (`evento_id`),
+  CONSTRAINT `flag_ibfk_1` FOREIGN KEY (`evento_id`) REFERENCES `evento` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `atividade` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -65,7 +90,8 @@ CREATE TABLE `atividade` (
   `vagas_totais` int(11) DEFAULT NULL,
   `vagas_disponiveis` int(11) DEFAULT NULL,
   `ativo` tinyint(1) NOT NULL,
-  `data_hora` datetime DEFAULT NULL,
+  `data_hora_inicio` datetime DEFAULT NULL,
+  `data_hora_fim` datetime DEFAULT NULL,
   `local` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `titulo` varchar(64) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `descricao` varchar(1024) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -121,18 +147,34 @@ CREATE TABLE `participante` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_usuario` int(11) DEFAULT NULL,
   `id_evento` int(11) NOT NULL,
-  `pacote` tinyint(1) NOT NULL,
-  `id_camiseta` int(11) DEFAULT NULL,
   `data_inscricao` datetime DEFAULT NULL,
   `credenciado` tinyint(1) NOT NULL,
   `opcao_coffee` int(11) NOT NULL,
+  `pontuacao` int(11) DEFAULT NULL,
+  `minicurso_etapa_1` int(11) DEFAULT NULL,
+  `minicurso_etapa_2` int(11) DEFAULT NULL,
+  `uuid` varchar(512) DEFAULT NULL,  
+  `wifi` tinyint(1) DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_usuario` (`id_usuario`),
   KEY `id_evento` (`id_evento`),
-  KEY `id_camiseta` (`id_camiseta`),
+  KEY `minicurso_etapa_1` (`minicurso_etapa_1`),
+  KEY `minicurso_etapa_2` (`minicurso_etapa_2`),
   CONSTRAINT `participante_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`),
   CONSTRAINT `participante_ibfk_2` FOREIGN KEY (`id_evento`) REFERENCES `evento` (`id`),
-  CONSTRAINT `participante_ibfk_3` FOREIGN KEY (`id_camiseta`) REFERENCES `camiseta` (`id`)
+  CONSTRAINT `participante_ibfk_3` FOREIGN KEY (`minicurso_etapa_1`) REFERENCES `atividade` (`id`),
+  CONSTRAINT `participante_ibfk_4` FOREIGN KEY (`minicurso_etapa_2`) REFERENCES `atividade` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `admin_model_history` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) DEFAULT NULL,
+  `acao` varchar(200) NOT NULL,
+  `nome_modelo` varchar(200) DEFAULT NULL,
+  `id_modelo` int(11) DEFAULT NULL,
+  `data_hora_acao` datetime DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_usuario` (`id_usuario`),
+  CONSTRAINT `admin_model_history_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `ministrante` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -150,6 +192,15 @@ CREATE TABLE `ministrante` (
   PRIMARY KEY (`id`),
   KEY `id_usuario` (`id_usuario`),
   CONSTRAINT `ministrante_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `como_conheceu` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_usuario` int(11) DEFAULT NULL,
+  `opcao` int(11) NOT NULL,
+  `outro` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_usuario` (`id_usuario`),
+  CONSTRAINT `como_conheceu_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `dados_hospedagem_transporte` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -216,6 +267,7 @@ CREATE TABLE `membro_de_equipe` (
   `id_usuario` int(11) NOT NULL,
   `foto` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `email_secomp` varchar(254) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `descricao` varchar(254) DEFAULT NULL,
   `id_cargo` int(11) NOT NULL,
   `id_diretoria` int(11) NOT NULL,
   `id_evento` int(11) NOT NULL,
@@ -232,25 +284,44 @@ CREATE TABLE `membro_de_equipe` (
 CREATE TABLE `pagamento` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `id_participante` int(11) DEFAULT NULL,
+  `id_camiseta` int(11) DEFAULT NULL,
   `payment_id` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `payer_id` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `descricao` varchar(200) COLLATE utf8mb4_unicode_ci NOT NULL,
   `valor` float NOT NULL,
   `efetuado` tinyint(1) NOT NULL,
+  `arquivo_comprovante` varchar(100) DEFAULT NULL,
+  `comprovante_enviado` tinyint(1) NOT NULL,
+  `metodo_pagamento` varchar(100) NOT NULL,
+  `rejeitado` tinyint(1) NOT NULL,
+  `cancelado` tinyint(1) NOT NULL,
+  `data_hora_pagamento` datetime DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `id_participante` (`id_participante`),
-  CONSTRAINT `pagamento_ibfk_1` FOREIGN KEY (`id_participante`) REFERENCES `participante` (`id`)
+  KEY `id_camiseta` (`id_camiseta`),
+  CONSTRAINT `pagamento_ibfk_1` FOREIGN KEY (`id_participante`) REFERENCES `participante` (`id`),
+  CONSTRAINT `pagamento_ibfk_2` FOREIGN KEY (`id_camiseta`) REFERENCES `camiseta` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE `cupom_desconto` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_pagamento` int(11) DEFAULT NULL,
+  `nome` varchar(200) NOT NULL,
+  `valor` float NOT NULL,
+  `usado` tinyint(1) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_pagamento` (`id_pagamento`),
+  CONSTRAINT `cupom_desconto_ibfk_1` FOREIGN KEY (`id_pagamento`) REFERENCES `pagamento` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 CREATE TABLE `patrocinador` (
   `id` int(11) NOT NULL,
   `nome_empresa` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `logo` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `logo` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ativo_site` tinyint(1) NOT NULL,
   `id_cota` int(11) NOT NULL,
-  `ordem_site` int(11) NOT NULL,
+  `ordem_site` int(11) DEFAULT NULL,
   `link_website` varchar(200) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `ultima_atualizacao_em` datetime DEFAULT NULL,
-  PRIMARY KEY (`id`,`ordem_site`),
+  PRIMARY KEY (`id`),
   KEY `id_cota` (`id_cota`),
   CONSTRAINT `patrocinador_ibfk_1` FOREIGN KEY (`id_cota`) REFERENCES `cota_patrocinio` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -331,8 +402,17 @@ CREATE TABLE `relacao_permissao_usuario` (
   CONSTRAINT `relacao_permissao_usuario_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id`),
   CONSTRAINT `relacao_permissao_usuario_ibfk_2` FOREIGN KEY (`id_permissao`) REFERENCES `permissao` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
-INSERT INTO evento (id, edicao, data_hora_inicio, data_hora_fim, inicio_inscricoes_evento, fim_inscricoes_evento, ano) VALUES (1, 10, '2019-09-09 08:30:00', '2019-09-13 18:30:00', '2019-02-10 12:00:00', '2019-08-10 23:59:00', 2019);
+CREATE TABLE `relacao_participante_flags` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id_flag` int(11) DEFAULT NULL,
+  `id_participante` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `id_flag` (`id_flag`),
+  KEY `id_participante` (`id_participante`),
+  CONSTRAINT `relacao_participante_flags_ibfk_1` FOREIGN KEY (`id_flag`) REFERENCES `flag` (`id`),
+  CONSTRAINT `relacao_participante_flags_ibfk_2` FOREIGN KEY (`id_participante`) REFERENCES `participante` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+INSERT INTO evento (id, edicao, data_hora_inicio, data_hora_fim, inicio_inscricoes_evento, fim_inscricoes_evento, ano, abertura_minicursos_1_etapa, fechamento_minicursos_1_etapa, abertura_minicursos_2_etapa, fechamento_minicursos_2_etapa) VALUES (1, 10, '2019-09-09 08:30:00', '2019-09-13 18:30:00', '2019-02-10 12:00:00', '2019-08-10 23:59:00', 2019, '2019-08-10 23:59:00', '2019-08-10 23:59:00', '2019-08-10 23:59:00', '2019-08-10 23:59:00');
 INSERT INTO curso (id, nome) VALUES (1, 'Ciência da Computação'), (2, 'Engenharia da Computação');
 INSERT INTO instituicao (id, nome) VALUES (1, 'UFSCar'), (2, 'USP'), (3, 'UNESP'), (4, 'Unicamp');
 INSERT INTO cidade (id, nome) VALUES (1, 'São Carlos'), (2, 'São Paulo'), (3, 'Campinas'),(4, 'Rio Claro');
