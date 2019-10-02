@@ -9,6 +9,8 @@ RUN apk add --no-cache --virtual build-deps gcc musl-dev zlib-dev jpeg-dev libff
 FROM python:3-alpine as runner
 WORKDIR /site-secomp
 
+RUN apk add --no-cache zlib-dev jpeg-dev
+
 COPY --from=builder /build /usr/local
 COPY ./site-secomp ./
 
