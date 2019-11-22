@@ -8,6 +8,13 @@ volumes/db/migrations/
 # certbot data
 volumes/certbot/
 
+# flask data
+volumes/flask/
+
+# general server data
+logs/
+backups/
+
 # python cache and compiled files
 __pycache__/
 *.pyc

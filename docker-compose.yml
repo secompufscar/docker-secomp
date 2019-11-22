@@ -20,7 +20,7 @@ services:
         build: .
         environment:
             FLASK_CONFIGURATION: "${FLASK_CONFIGURATION:-default}"
-            GUNICORN_WORKERS: "${GUNICORN_WORKERS:-4}"
+            WORKERS: "${WORKERS:-4}"
         volumes:
             - ./volumes/flask/uploads:/uploads
             - ./volumes/db/migrations:/site-secomp/migrations
