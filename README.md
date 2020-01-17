@@ -5,6 +5,7 @@ Dockerfiles usadas na infraestrutura da SECOMP
 Para rodar o projeto é necessário instalar as seguintes dependências:
 - docker
 - docker-compose
+
 E adicionar o seu usuário ao grupo `docker`
 ```bash
 # sudo usermod -aG docker $USER
