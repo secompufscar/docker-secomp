@@ -12,14 +12,25 @@ services:
             - ./volumes/db/tables:/docker-entrypoint-initdb.d
             - ./volumes/db/data:/var/lib/mysql
             - ./volumes/db/secomp.cnf:/etc/mysql/conf.d/custom.cnf
-        expose:
-            - "3306"
+        ports:
+            - "3306:3306"
+        restart: always
+
+    backup:
+        build: ./volumes/db/backup/setup/
+        environment:
+              MYSQL_DATABASE: "${MYSQL_DATABASE:-db}"
+              MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD:-root}"
+        volumes:
+              - /etc/localtime:/etc/localtime:ro
+              - ./volumes/db/backup/data:/opt/mysql/backup
+        command: crond -f -d 8
         restart: always
 
     flask:
         build: .
         environment:
-            FLASK_CONFIGURATION: "${FLASK_CONFIGURATION:-default}"
+            FLASK_ENVIRONMENT: "${FLASK_ENVIRONMENT:-default}"
             WORKERS: "${WORKERS:-4}"
         volumes:
             - ./volumes/flask/uploads:/uploads

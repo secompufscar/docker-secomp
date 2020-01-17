@@ -15,7 +15,7 @@ COPY ./site-secomp .
 RUN apk add --no-cache zlib-dev jpeg-dev libmagic binutils musl-dev tzdata mysql-client && \
     pip install --no-index --find-links=/opt/wheels -r requirements.txt
 
-ENV FLASK_CONFIGURATION=default \
+ENV FLASK_ENVIRONMENT=default \
     WORKERS=4 \
     TZ=America/Sao_Paulo
 
