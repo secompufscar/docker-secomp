@@ -25,6 +25,8 @@ services:
               - /etc/localtime:/etc/localtime:ro
               - ./volumes/db/backup/data:/opt/mysql/backup
         command: crond -f -d 8
+        depends_on:
+              - db
         restart: always
 
     flask:
@@ -32,6 +34,7 @@ services:
         environment:
             FLASK_ENVIRONMENT: "${FLASK_ENVIRONMENT:-default}"
             WORKERS: "${WORKERS:-4}"
+            MYSQL_DATABASE: "${MYSQL_DATABASE:-db}"
         volumes:
             - ./volumes/flask/uploads:/uploads
             - ./volumes/db/migrations:/site-secomp/migrations
@@ -46,7 +49,7 @@ services:
         restart: unless-stopped
         volumes:
             - ./volumes/nginx:/etc/nginx/conf.d
-            - ./volumes/certbot/conf:/etc/letsencrypt
+            - ./volumes/certbot/conf:/etc/certs
             - ./volumes/certbot/www:/var/www/certbot
             - ./site-secomp:/site-secomp
         ports:
@@ -56,12 +59,11 @@ services:
             - flask
         command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
 
-    certbot:
-        image: certbot/certbot
-        restart: unless-stopped
-        volumes:
-            - ./volumes/nginx/log:/var/log/nginx
-            - ./volumes/certbot/conf:/etc/letsencrypt
-            - ./volumes/certbot/www:/var/www/certbot
-        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
-
+        #    certbot:
+        #        image: certbot/certbot
+        #       restart: unless-stopped
+        #        volumes:
+        #            - ./volumes/nginx/log:/var/log/nginx
+        #            - ./volumes/certbot/conf:/etc/letsencrypt
+        #            - ./volumes/certbot/www:/var/www/certbot
+        #        entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done;'"
