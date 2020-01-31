@@ -57,7 +57,7 @@ then
     MYSQL_USER="root"
 fi
 
-echo -n "- Entre a senha (root): "
+echo -n "- Entre a senha do usuário (root): "
 stty -echo
 read MYSQL_PASSWORD
 stty echo
