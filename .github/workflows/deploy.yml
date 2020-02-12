@@ -15,4 +15,4 @@ jobs:
           cd ~ && git pull
           ~/configure.sh
           docker-compose up -d"
-        KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+        KEY: ${{ secrets.SSH_PUBLIC_KEY }}
