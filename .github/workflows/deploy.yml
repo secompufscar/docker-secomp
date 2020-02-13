@@ -6,13 +6,19 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - name: Deploy
-      uses: appleboy/ssh-action@master
-      env:
-        USERNAME: ${{ secrets.USER_NAME }}
-        HOST: ${{ secrets.TEST_REMOTE_HOST }}
-        SCRIPT: |
-          cd ~ && git pull
-          ~/configure.sh
-          docker-compose up -d"
-        KEY: ${{ secrets.SSH_PUBLIC_KEY }}
+    - uses: actions/checkout@v1
+      
+    - name: Sets SSH KEYS and KNOW_HOSTS
+      run: |
+          mkdir -p ~/.ssh
+          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+          chmod 700 ~/.ssh/id_rsa
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
+          ssh-keyscan -H 'github.com' >> ~/.ssh/known_hosts
+
+    - name: Acessing remote server ## Apenas feito um teste, para ver se esta funcionando.
+      run: |
+          destination="${{ secrets.USER_NAME }}@${{ secrets.TEST.REMOTE.HOST }}"
+          ssh $destination
+          whoami
