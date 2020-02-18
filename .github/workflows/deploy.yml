@@ -7,18 +7,26 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v1
+
+    - name: sh-checker # Checa por warnings em shell scripts
+      uses: luizm/action-sh-checker@v0.1.2
       
     - name: Sets SSH KEYS and KNOW_HOSTS
+      env:
+         PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+         HOST: ${{ secrets.REMOTE_HOST }}
       run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa
+          echo "$PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa 
           chmod 700 ~/.ssh/id_rsa
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_rsa
-          ssh-keyscan -H 'github.com' >> ~/.ssh/known_hosts
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
 
-    - name: Acessing remote server ## Apenas feito um teste, para ver se esta funcionando.
-      run: |
-          destination="${{ secrets.USER_NAME }}@${{ secrets.TEST.REMOTE.HOST }}"
-          ssh $destination
-          whoami
+    - name: Acessing remote server and running the setup.
+      env:
+          NAME: ${{ secrets.USER_NAME }}
+          HOST: ${{ secrets.REMOTE_HOST }}
+      run: ssh -tt "$NAME"@"$HOST" 'cd docker-secomp && git pull && ./configure.sh && docker-compose up -d'
+       
+         
