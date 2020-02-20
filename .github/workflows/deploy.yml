@@ -28,6 +28,6 @@ jobs:
       env:
           NAME: ${{ secrets.USER_NAME }}
           HOST: ${{ secrets.TEST_REMOTE_HOST }}
-      run: ssh -tt "$NAME"@"$HOST" 'cd docker-secomp && git pull && ./configure.sh --default && docker-compose up -d'
+      run: ssh -tt "$NAME"@"$HOST" 'cd docker-secomp && git pull && ./configure.sh --default && ./restart.sh --pull'
        
          
