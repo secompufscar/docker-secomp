@@ -50,7 +50,7 @@ fi
 
 MYSQL_DATABASE="db"
 if [ "$DEFAULT" = 0 ]; then
-   echo "- Entre o nome do banco de dados (db): " && read -r MYSQL_DATABASE
+   echo "> Entre o nome do banco de dados (db): " && read -r MYSQL_DATABASE
    if [ -z "$MYSQL_DATABASE" ]; then
       MYSQL_DATABASE="db"
    fi
@@ -58,7 +58,7 @@ fi
 
 MYSQL_USER="root"
 if [ "$DEFAULT" = 0 ]; then
-   echo -n "- Entre o nome de usuário (root): " && read -r MYSQL_USER
+   echo "> Entre o nome de usuario (root): " && read -r MYSQL_USER
    if [ -z "$MYSQL_USER" ]; then
       MYSQL_USER="root"
     fi
@@ -66,7 +66,7 @@ fi
 
 MYSQL_PASSWORD="root"
 if [ "$DEFAULT" = 0 ]; then
-   echo "- Entre a senha do usuário (root): "
+   echo "> Entre a senha do usuario (root): "
    stty -echo && read -r MYSQL_PASSWORD
    stty echo && echo
    if [ -z "$MYSQL_PASSWORD" ]; then
@@ -78,7 +78,7 @@ fi
 echo "Configurando ambiente do Flask"
 FLASK_ENVIRONMENT="default"
 if [ "$DEFAULT" = 0 ]; then
-   echo "- Entre o nome do ambiente do Flask [development, production, default] (default): " && read -r FLASK_ENVIRONMENT
+   echo "> Entre o nome do ambiente do Flask [development, production, default] (default): " && read -r FLASK_ENVIRONMENT
    if [ -z "$FLASK_ENVIRONMENT" ]; then
       FLASK_ENVIRONMENT="default"
    fi
