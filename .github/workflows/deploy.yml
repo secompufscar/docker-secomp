@@ -15,7 +15,7 @@ jobs:
     - name: Set ssh key and known_hosts
       env:
          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-         HOST: ${{ secrets.REMOTE_HOST }}
+         HOST: ${{ secrets.TEST_REMOTE_HOST }}
       run: |
           mkdir -p ~/.ssh
           echo "$PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa 
