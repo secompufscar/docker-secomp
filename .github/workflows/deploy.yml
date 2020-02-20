@@ -1,4 +1,4 @@
-name: CD
+name: CI/CD
 
 on: [push]
  
@@ -6,12 +6,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout repository
+      uses: actions/checkout@v1
 
-    - name: sh-checker # Checa por warnings em shell scripts
+    - name: Lint .sh scripts # Checa por warnings em shell scripts
       uses: luizm/action-sh-checker@v0.1.2
       
-    - name: Sets SSH KEYS and KNOW_HOSTS
+    - name: Set ssh key and known_hosts
       env:
          PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
          HOST: ${{ secrets.REMOTE_HOST }}
@@ -23,7 +24,7 @@ jobs:
           ssh-add ~/.ssh/id_rsa
           ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
 
-    - name: Acessing remote server and running the setup.
+    - name: Run deploy on remote server
       env:
           NAME: ${{ secrets.USER_NAME }}
           HOST: ${{ secrets.REMOTE_HOST }}
