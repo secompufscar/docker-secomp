@@ -19,4 +19,4 @@ echo "Performing schema migrations..."
 flask db migrate && flask db upgrade
 
 echo "Starting up Gunicorn..."
-exec gunicorn -k gevent -w $"{WORKERS:-4}" -b ':8000' run:server
+exec gunicorn -k gevent -w "${WORKERS:-4}" -b ':8000' run:server
