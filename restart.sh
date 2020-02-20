@@ -1,5 +1,7 @@
-if [ "$1" ] && [ "$1" == "--pull" ]; then
-	git submodule foreach git pull
+#! /bin/sh
+
+if [ "$1" = "--pull" ]; then
+   git submodule foreach git pull
 fi
 docker-compose stop flask nginx
 docker-compose rm flask nginx
