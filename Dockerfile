@@ -1,18 +1,19 @@
-FROM python:3-alpine as builder
+FROM python:3-slim as builder
 WORKDIR /build
 
 COPY ./site-secomp/requirements.txt .
-RUN apk update && \
-    apk add --no-cache --virtual build-deps gcc musl-dev zlib-dev jpeg-dev libffi-dev openssl-dev && \
+RUN apt update && \
+    apt install -y zlib1g-dev libjpeg-dev libffi-dev openssl && \
     pip wheel --wheel-dir=/opt/wheels -r requirements.txt
 
-FROM python:3-alpine as runner
+FROM python:3-slim as runner
 WORKDIR /site-secomp
 
 COPY --from=builder /opt/wheels /opt/wheels
 COPY ./site-secomp .
 
-RUN apk add --no-cache zlib-dev jpeg-dev libmagic binutils musl-dev tzdata mysql-client && \
+RUN apt update && \
+    apt install -y zlib1g-dev libjpeg-dev libmagic1 binutils tzdata default-mysql-client && \
     pip install --no-index --find-links=/opt/wheels -r requirements.txt
 
 ENV FLASK_CONFIGURATION=default \

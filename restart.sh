@@ -3,6 +3,6 @@ if [ "$1" ] && [ "$1" == "--pull" ]; then
 fi
 docker-compose stop flask nginx
 docker-compose rm flask nginx
-docker rmi dockersecomp_flask:latest python:3-alpine nginx:alpine
+docker rmi dockersecomp_flask:latest
 sudo chown ubuntu:ubuntu -R volumes/db/data
 docker-compose up --build  -d
