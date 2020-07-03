@@ -4,6 +4,7 @@
 # mysql data
 volumes/db/data/
 volumes/db/migrations/
+volumes/db/backup/data/
 
 # certbot data
 volumes/certbot/

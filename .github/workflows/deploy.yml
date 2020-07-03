@@ -1,0 +1,33 @@
+name: CI/CD
+
+on: [push]
+ 
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v1
+
+    - name: Lint .sh scripts # Checa por warnings em shell scripts
+      uses: luizm/action-sh-checker@v0.1.2
+      
+    - name: Set ssh key and known_hosts
+      env:
+         PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+         HOST: ${{ secrets.TEST_REMOTE_HOST }}
+      run: |
+          mkdir -p ~/.ssh
+          echo "$PRIVATE_KEY" | tr -d '\r' > ~/.ssh/id_rsa 
+          chmod 700 ~/.ssh/id_rsa
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
+          ssh-keyscan -H "$HOST" >> ~/.ssh/known_hosts
+
+    - name: Run deploy on remote server
+      env:
+          NAME: ${{ secrets.USER_NAME }}
+          HOST: ${{ secrets.TEST_REMOTE_HOST }}
+      run: ssh -tt "$NAME"@"$HOST" 'cd docker-secomp && git pull && ./configure.sh --default && ./restart.sh --pull'
+       
+         

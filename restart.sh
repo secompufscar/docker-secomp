@@ -1,8 +1,10 @@
-if [ "$1" ] && [ "$1" == "--pull" ]; then
-	git submodule foreach git pull
+#! /bin/sh
+
+if [ "$1" = "--pull" ]; then
+   git submodule foreach git pull
 fi
 docker-compose stop flask nginx
-docker-compose rm flask nginx
+docker-compose rm -f flask nginx
 docker rmi dockersecomp_flask:latest
 sudo chown ubuntu:ubuntu -R volumes/db/data
 docker-compose up --build  -d
